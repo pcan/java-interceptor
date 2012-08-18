@@ -104,5 +104,7 @@ This is the reason why "methodInvoked" gets <i>intercepted object</i> and <i>int
 
 If you look at the source code, you should note that it's a bit "C-style". It is intentionally written in this way, becouse it must be <i>fast</i>. Many things could be done differently, i know, but this is my own idea, please don't complain about my code style (actually, it's usually different from this).
 
+You should note that I didn't use any bytecode modification library like Apache BCEL. I decided to write a minimal library, with only the code to do the job. On the other hand, Java bytecode specification is very very wide, and a full-featured library like BCEL would have been like taking a hammer to crack a nut. It's just too <i>big</i>.
+
 DISCLAIMER: Feel free to use my code in your own projects, but do it at your own risk. No guarantee is given about it.
 This library is released under the Apache License v2.0.
