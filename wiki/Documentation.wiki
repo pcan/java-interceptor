@@ -3,6 +3,10 @@
 
 = Introduction =
 
+
+     <i> « They're watching you, Neo. » </i>  ,,(Trinity),,
+
+
 From Wikipedia:
 <i>
 In the field of software development, an interceptor pattern is a software design pattern that is used when software systems or frameworks want to offer a way to change, or augment, their usual processing cycle. [...] Key aspects of the pattern are that the change is transparent and used automatically. In essence, the rest of the systems does not have to know something has been added or changed and can keep working as before.
