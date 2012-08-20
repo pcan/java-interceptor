@@ -14,17 +14,17 @@ import java.io.IOException;
  */
 public class LocalVariableTable extends AbstractAttribute {
 
-    private LocalVariableEntry[] table;
+    private LocalVariableTableEntry[] table;
 
-    public LocalVariableEntry[] getTable() {
+    public LocalVariableTableEntry[] getTable() {
         return table;
     }
 
-    public void setTable(LocalVariableEntry[] table) {
+    public void setTable(LocalVariableTableEntry[] table) {
         this.table = table;
     }
 
-    public static class LocalVariableEntry {
+    public static class LocalVariableTableEntry {
 
         private int startPc;
         private int length;
@@ -74,11 +74,11 @@ public class LocalVariableTable extends AbstractAttribute {
     }
 
     public void refresh(int injectedCodeSize) throws IOException {
-        int attrLength = table.length*4;
+        int attrLength = table.length*10; //(5 x short)
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(2 + attrLength);
         DataOutputStream os = new DataOutputStream(byteArrayOutputStream);
         os.writeShort(table.length);
-        for(LocalVariableEntry entry : table) {
+        for(LocalVariableTableEntry entry : table) {
             int startPc = (entry.getStartPc() == 0 ? 0 : entry.getStartPc() + injectedCodeSize);
             os.writeShort(startPc);
             int length = (entry.getStartPc() == 0 ? entry.getLength() + injectedCodeSize : entry.getLength());
