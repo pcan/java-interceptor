@@ -5,10 +5,11 @@
 package it.pcan.java.interceptor;
 
 import it.pcan.java.interceptor.annotations.InterceptedBy;
-import it.pcan.java.interceptor.entity.Code.ExceptionEntry;
-import it.pcan.java.interceptor.entity.LocalVariableTable.LocalVariableEntry;
+import it.pcan.java.interceptor.entity.Code.ExceptionTableEntry;
+import it.pcan.java.interceptor.entity.LocalVariableTable.LocalVariableTableEntry;
 import it.pcan.java.interceptor.entity.*;
 import it.pcan.java.interceptor.entity.LineNumberTable.LineNumberEntry;
+import it.pcan.java.interceptor.entity.LocalVariableTypeTable.LocalVariableTypeTableEntry;
 import it.pcan.java.interceptor.util.ConstantPoolUtils;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -46,6 +47,8 @@ class AttributeFacility {
             attribute = readCode(nameIndex, length);
         } else if (attrName.equals(LocalVariableTable.class.getSimpleName())) {
             attribute = readLocalVariableTable(nameIndex, length);
+        } else if (attrName.equals(LocalVariableTypeTable.class.getSimpleName())) {
+            attribute = readLocalVariableTypeTable(nameIndex, length);
         } else if (attrName.equals(LineNumberTable.class.getSimpleName())) {
             attribute = readLineNumberTable(nameIndex, length);
         } else {
@@ -131,9 +134,9 @@ class AttributeFacility {
         byte code[] = new byte[codeLength];
         attrStream.read(code);
         int exceptionTableLength = attrStream.readUnsignedShort();
-        ExceptionEntry[] exceptionTable = new ExceptionEntry[exceptionTableLength];
+        ExceptionTableEntry[] exceptionTable = new ExceptionTableEntry[exceptionTableLength];
         for (int i = 0; i < exceptionTableLength; i++) {
-            ExceptionEntry exceptionEntry = readExceptionTable(attrStream);
+            ExceptionTableEntry exceptionEntry = readExceptionTable(attrStream);
             exceptionTable[i] = exceptionEntry;
         }
         int attributesCount = attrStream.readUnsignedShort();
@@ -145,6 +148,8 @@ class AttributeFacility {
                 attribute.setLineNumberTable((LineNumberTable)innerAttribute);
             } else if (innerAttribute.getClass() == LocalVariableTable.class) {
                 attribute.setLocalVariableTable((LocalVariableTable)innerAttribute);
+            } else if (innerAttribute.getClass() == LocalVariableTypeTable.class) {
+                attribute.setLocalVariableTypeTable((LocalVariableTypeTable)innerAttribute);
             }
             attributes[i] = innerAttribute;
         }
@@ -158,8 +163,8 @@ class AttributeFacility {
         return attribute;
     }
 
-    private ExceptionEntry readExceptionTable(DataInputStream attrStream) throws IOException {
-        ExceptionEntry exceptionTable = new ExceptionEntry();
+    private ExceptionTableEntry readExceptionTable(DataInputStream attrStream) throws IOException {
+        ExceptionTableEntry exceptionTable = new ExceptionTableEntry();
         exceptionTable.setStartPc(attrStream.readUnsignedShort());
         exceptionTable.setEndPc(attrStream.readUnsignedShort());
         exceptionTable.setHandlerPc(attrStream.readUnsignedShort());
@@ -173,20 +178,44 @@ class AttributeFacility {
         DataInputStream attrStream = new DataInputStream(new ByteArrayInputStream(attribute.getInfo()));
 
         int localVariableTableLength = attrStream.readUnsignedShort();
-        attribute.setTable(new LocalVariableEntry[localVariableTableLength]);
+        attribute.setTable(new LocalVariableTableEntry[localVariableTableLength]);
         for (int i = 0; i < localVariableTableLength; i++) {
-            LocalVariableEntry entry = readLocalVariableEntry(attrStream);
+            LocalVariableTableEntry entry = readLocalVariableEntry(attrStream);
             attribute.getTable()[i] = entry;
         }
         return attribute;
     }
 
-    private LocalVariableEntry readLocalVariableEntry(DataInputStream attrStream) throws IOException {
-        LocalVariableEntry entry = new LocalVariableEntry();
+    private AbstractAttribute readLocalVariableTypeTable(int nameIndex, int length) throws IOException {
+        LocalVariableTypeTable attribute = new LocalVariableTypeTable();
+        readRawData(attribute, nameIndex, length);
+        DataInputStream attrStream = new DataInputStream(new ByteArrayInputStream(attribute.getInfo()));
+
+        int localVariableTypeTableLength = attrStream.readUnsignedShort();
+        attribute.setTable(new LocalVariableTypeTableEntry[localVariableTypeTableLength]);
+        for (int i = 0; i < localVariableTypeTableLength; i++) {
+            LocalVariableTypeTableEntry entry = readLocalVariableTypeEntry(attrStream);
+            attribute.getTable()[i] = entry;
+        }
+        return attribute;
+    }
+
+    private LocalVariableTableEntry readLocalVariableEntry(DataInputStream attrStream) throws IOException {
+        LocalVariableTableEntry entry = new LocalVariableTableEntry();
         entry.setStartPc(attrStream.readUnsignedShort());
         entry.setLength(attrStream.readUnsignedShort());
         entry.setNameIndex(attrStream.readUnsignedShort());
         entry.setDescriptorIndex(attrStream.readUnsignedShort());
+        entry.setIndex(attrStream.readUnsignedShort());
+        return entry;
+    }
+
+    private LocalVariableTypeTableEntry readLocalVariableTypeEntry(DataInputStream attrStream) throws IOException {
+        LocalVariableTypeTableEntry entry = new LocalVariableTypeTableEntry();
+        entry.setStartPc(attrStream.readUnsignedShort());
+        entry.setLength(attrStream.readUnsignedShort());
+        entry.setNameIndex(attrStream.readUnsignedShort());
+        entry.setSignatureIndex(attrStream.readUnsignedShort());
         entry.setIndex(attrStream.readUnsignedShort());
         return entry;
     }
