@@ -16,10 +16,11 @@ public class Code extends AbstractAttribute {
 
     private LineNumberTable lineNumberTable;
     private LocalVariableTable localVariableTable;
+    private LocalVariableTypeTable localVariableTypeTable;
     private int maxStack;
     private int maxLocals;
     private byte[] code;
-    private ExceptionEntry[] exceptionTable;
+    private ExceptionTableEntry[] exceptionTable;
     private AbstractAttribute[] attributes;
     private byte[] injected;
 
@@ -55,11 +56,11 @@ public class Code extends AbstractAttribute {
         this.maxStack = maxStack;
     }
 
-    public ExceptionEntry[] getExceptionTable() {
+    public ExceptionTableEntry[] getExceptionTable() {
         return exceptionTable;
     }
 
-    public void setExceptionTable(ExceptionEntry[] exceptionTable) {
+    public void setExceptionTable(ExceptionTableEntry[] exceptionTable) {
         this.exceptionTable = exceptionTable;
     }
 
@@ -87,7 +88,17 @@ public class Code extends AbstractAttribute {
         this.localVariableTable = localVariableTable;
     }
 
-    public static class ExceptionEntry {
+    public LocalVariableTypeTable getLocalVariableTypeTable() {
+        return localVariableTypeTable;
+    }
+
+    public void setLocalVariableTypeTable(LocalVariableTypeTable localVariableTypeTable) {
+        this.localVariableTypeTable = localVariableTypeTable;
+    }
+
+
+
+    public static class ExceptionTableEntry {
 
         private int startPc;
         private int endPc;
@@ -146,6 +157,9 @@ public class Code extends AbstractAttribute {
         if(this.localVariableTable != null) {
             this.localVariableTable.refresh(injectedCodeLength);
         }
+        if(this.localVariableTypeTable != null) {
+            this.localVariableTypeTable.refresh(injectedCodeLength);
+        }
 
         this.setAttributeLength(calcAttributeLength());
 
@@ -161,7 +175,7 @@ public class Code extends AbstractAttribute {
         os.write(code);
         
         os.writeShort(exceptionTable.length);
-        for(ExceptionEntry entry : exceptionTable) {
+        for(ExceptionTableEntry entry : exceptionTable) {
             refreshExceptionEntry(entry, injectedCodeLength);
             entry.serializeToStream(os);
         }
@@ -174,7 +188,7 @@ public class Code extends AbstractAttribute {
         this.setInfo(byteArrayOutputStream.toByteArray());
     }
 
-    private void refreshExceptionEntry(ExceptionEntry entry, int injectedCodeLength) {
+    private void refreshExceptionEntry(ExceptionTableEntry entry, int injectedCodeLength) {
         entry.setStartPc(entry.getStartPc() + injectedCodeLength);
         entry.setEndPc(entry.getEndPc() + injectedCodeLength);
         entry.setHandlerPc(entry.getHandlerPc() + injectedCodeLength);
