@@ -25,7 +25,7 @@ Here the story changes. For other reasons, some days ago I was wandering on the 
 
 The user puts "@InterceptedBy" annotation on the method he wants to intercept. As annotation argument, a class that implements MethodInterceptor interface must be specified. This class will be instantiated "on the fly" when the annotated method is called, and its "methodIntercepted" method is called before the execution of the target method.
 
-To make this happen, here comes self-modifying code. A custom class loader (InterceptorClassLoader) has to load the user's class that contain the method to be intercepted. This class loader inspects the user's code and looks for "InterceptedBy" annotation. When the annotation is found, the bytecode of the target method gets modified: the call to "methodIntercepted" becomes the first actual instruction of the target method, in a completely trasparent way. At this point the modified class is loaded, and at each call to the intercepted method, the interceptor gets invoked first.
+To make this happen, here comes self-modifying code. A custom class loader (InterceptorClassLoader) has to load the user's class that contains the method to be intercepted. This class loader inspects the user's code and looks for "InterceptedBy" annotation. When the annotation is found, the bytecode of the target method gets modified: the call to "methodIntercepted" becomes the first actual instruction of the target method, in a completely trasparent way. At this point the modified class is loaded, and at each call to the intercepted method, the interceptor gets invoked first.
 
 There are two ways to ensure correct classloading hierarchy during program execution:
 
