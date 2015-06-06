@@ -1,4 +1,4 @@
-#A method interceptor mechanism for Java SE.
+#A method interceptor mechanism for Java.
 
 ##Introduction
 
