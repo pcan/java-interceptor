@@ -1,6 +1,6 @@
-#A method interceptor mechanism for Java.
+# A method interceptor mechanism for Java.
 
-##Introduction
+## Introduction
 
 
     « They're watching you, Neo. »  (Trinity)
@@ -20,7 +20,7 @@ Some time ago, a colleague asked me if a similar service could be used (or re-cr
 
 Here the story changes. For other reasons, some days ago I was wandering on the net looking for information about "self-modifying" programs (genetic programming, etc.). I was just curious, this things look really Sci-Fi. So, yes, the idea I present here derives from self-modifying code. I should say self-modifying <i>byte</i>code.
 
-##How it works
+## How it works
 
 The user puts "@InterceptedBy" annotation on the method he wants to intercept. As annotation argument, a class that implements MethodInterceptor interface must be specified. This class will be instantiated "on the fly" when the annotated method is called, and its "methodIntercepted" method is called before the execution of the target method.
 
@@ -28,10 +28,10 @@ To make this happen, here comes self-modifying code. A custom class loader (Inte
 
 There are two ways to ensure correct classloading hierarchy during program execution:
 
- # specify "-Djava.system.class.loader=it.pcan.java.interceptor.InterceptorClassLoader" property as JVM parameter (the simpler way).
- # manually loading classes that contain methods to be intercepted, by using InterceptorClassLoader.
+specify "-Djava.system.class.loader=it.pcan.java.interceptor.InterceptorClassLoader" property as JVM parameter (the simpler way).
+manually loading classes that contain methods to be intercepted, by using InterceptorClassLoader.
 
-##Example
+## Example
 
     //Target class & method
   
@@ -99,7 +99,7 @@ Note: if "methodToBeIntercepted" was static, the resulting generated code would 
 
 This is the reason why "methodInvoked" gets <i>intercepted object</i> and <i>intercepted class name</i> as two separate arguments.
 
-##Implementation & release notes
+## Implementation & release notes
 
 If you look at the source code, you should note that it's a bit "C-style". It is intentionally written in this way, becouse it must be <i>fast</i>. 
 
